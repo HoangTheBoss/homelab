@@ -5,8 +5,8 @@ services:
     image: slothcroissant/caddy-cloudflaredns:latest
     restart: unless-stopped
     ports:
-      - "80:80"
-      - "443:443"
+      - "8687:80"
+      - "4433:443"
     volumes:
       - $PWD/Caddyfile:/etc/caddy/Caddyfile
       - $PWD/site:/srv
