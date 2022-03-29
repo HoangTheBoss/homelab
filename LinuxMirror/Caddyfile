@@ -1,6 +1,11 @@
+{
+    debug
+}
+
 mirrors.42tm.tech
-root * /mirror
 tls hoangtheboss.hyper@gmail.com {
         dns cloudflare {env.CLOUDFLARE_API_TOKEN}
 }
+header Server "Bủh Bủh"
+root * /mirror
 file_server browse
