@@ -1,0 +1,19 @@
+version: "3.7"
+
+services:
+  caddy:
+    image: slothcroissant/caddy-cloudflaredns:latest
+    restart: unless-stopped
+    ports:
+      - "80:80"
+      - "443:443"
+    volumes:
+      - $PWD/Caddyfile:/etc/caddy/Caddyfile
+      - $PWD/site:/srv
+      - $MIRRORPATH:/mirror
+      - $PWD/caddy_data:/data
+      - $PWD/caddy_config:/config
+    environment:
+        - CLOUDFLARE_EMAIL=hoangtheboss.hyper@gmail.com
+        - CLOUDFLARE_API_TOKEN=$TOKEN
+        - ACME_AGREE=true
