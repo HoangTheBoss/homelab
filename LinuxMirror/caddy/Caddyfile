@@ -1,0 +1,13 @@
+{
+    debug
+}
+
+mirrors.42tm.tech {
+    tls hoangtheboss.hyper@gmail.com {
+        dns cloudflare {env.CLOUDFLARE_API_TOKEN}
+    }
+    root * /mirror
+    encode gzip
+    file_server browse
+    header Server "Bruh"
+}
