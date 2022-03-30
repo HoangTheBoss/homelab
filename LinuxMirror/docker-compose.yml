@@ -13,6 +13,6 @@ services:
       - $PWD/caddy_data:/data
       - $PWD/caddy_config:/config
     environment:
-        - CLOUDFLARE_EMAIL=hoangtheboss.hyper@gmail.com
+        - CLOUDFLARE_EMAIL=$EMAIL
         - CLOUDFLARE_API_TOKEN=$TOKEN
         - ACME_AGREE=true
