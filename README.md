@@ -1,5 +1,7 @@
 # HoangTheBoss' smol homelab
 
+![example workflow](https://github.com/HoangTheBoss/homelab/actions/workflows/linuxmirror-caddy-docker.yml/badge.svg)
+
 ## Summary
 
 I'm runing some services on my DIY NAS (currently running OMV6), with a Xiaomi router running Padavan firmware.
