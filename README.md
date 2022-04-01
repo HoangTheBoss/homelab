@@ -1,6 +1,7 @@
 # HoangTheBoss' smol homelab
 
-![example workflow](https://github.com/HoangTheBoss/homelab/actions/workflows/linuxmirror-caddy-docker.yml/badge.svg)
+![linuxmirror-caddy-docker](https://github.com/HoangTheBoss/homelab/actions/workflows/linuxmirror-caddy-docker.yml/badge.svg)
+![jmusicbot-docker](https://github.com/HoangTheBoss/homelab/actions/workflows/jmusicbot-docker.yml/badge.svg)
 
 ## Summary
 
