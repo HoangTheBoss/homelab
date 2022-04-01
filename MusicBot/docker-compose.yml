@@ -1,0 +1,11 @@
+version: "3.9"
+services:
+  jmusicbot:
+    build: jmusicbot:docker
+    restart: unless-stopped
+    volumes:
+      - $BOTDIR:/bot
+    environment:
+      TOKEN: $BOT_TOKEN
+      OWNER: $BOT_OWNER
+      PREFIX: $BOT_PREFIX
