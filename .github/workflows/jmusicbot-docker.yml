@@ -2,9 +2,9 @@ name: JMusicBot Docker Build
 
 on:
   push:
-    branches: [ main ]
+    paths: 'MusicBot/**'
   pull_request:
-    branches: [ main ]
+    paths: 'MusicBot/**'
 
 jobs:
 
