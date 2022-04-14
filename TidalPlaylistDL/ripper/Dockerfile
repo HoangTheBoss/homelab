@@ -12,6 +12,7 @@ FROM python:3.9
 
 RUN pip3 install streamrip --upgrade
 
+RUN mkdir /config
 RUN touch /config/links.txt
 
 VOLUME /config
