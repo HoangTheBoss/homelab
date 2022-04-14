@@ -2,9 +2,9 @@ name: Tidal Downloader Docker Build
 
 on:
   push:
-    branches: [ main ]
+    paths: 'TidalPlaylistDL/**'
   pull_request:
-    branches: [ main ]
+    paths: 'TidalPlaylistDL/**'
 
 jobs:
 
