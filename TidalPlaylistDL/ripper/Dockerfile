@@ -5,8 +5,8 @@ RUN DEBIAN_FRONTEND=noninteractive \
 	apt-get -y upgrade && \
 	apt-get -y install cron
 
-COPY scrape.sh /
-COPY run.sh /
+COPY ./scrape.sh /
+COPY ./run.sh /
 
 FROM python:3.9
 
