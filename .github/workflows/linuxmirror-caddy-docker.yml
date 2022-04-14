@@ -2,9 +2,9 @@ name: LinuxMirror Caddy Docker Build
 
 on:
   push:
-    branches: [ main ]
+    paths: 'LinuxMirror/**'
   pull_request:
-    branches: [ main ]
+    paths: 'LinuxMirror/**'
 
 jobs:
 
