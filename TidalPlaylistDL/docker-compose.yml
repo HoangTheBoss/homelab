@@ -1,0 +1,9 @@
+version: "3.7"
+
+services:
+  streamrip:
+    build: ripper
+    restart: unless-stopped
+    volumes:
+      - $CONFPATH:/config
+      - $FILEPATH:/downloads

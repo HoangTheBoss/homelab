@@ -1,0 +1,15 @@
+rclone_rclone:
+    image: rclone/rclone
+    container_name: rclone_rclone
+    restart: always
+    command: rcd --rc-web-gui --rc-addr :5572 --rc-user $GUIUSER --rc-pass $GUIPASS
+    ports:
+      - "5572:5572"
+    volumes:
+      - $RCLONEDIR:/config/rclone
+      - $RCLONEDIR:/logs
+      - $SHAREDIR:/share:ro
+    environment:
+      - PHP_TZ=Asia/Ho_Chi_Minh
+      - PUID=1000
+      - PGID=1000
