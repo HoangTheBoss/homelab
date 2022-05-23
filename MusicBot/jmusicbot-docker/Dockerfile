@@ -1,3 +1,4 @@
+FROM ubuntu
 FROM openjdk:11-jre-slim
 
 WORKDIR /bot
@@ -16,4 +17,5 @@ ENV PREFIX=!
 RUN sed -i 's/##token/'$token'/g' config.txt
 RUN sed -i 's/##owner/'$owner'/g' config.txt
 RUN sed -i 's/##prefix/'$prefix'/g' config.txt
+
 ENTRYPOINT java -jar JMusicBot.jar
