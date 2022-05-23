@@ -7,7 +7,7 @@ WORKDIR /bot
 
 ARG BOTVERSION=0.3.8
 ARG TOKEN="0"
-ARG OWNER="0
+ARG OWNER="0"
 ARG PREFIX="!"
 
 RUN wget https://github.com/jagrosh/MusicBot/releases/download/0.2.9/config.txt
