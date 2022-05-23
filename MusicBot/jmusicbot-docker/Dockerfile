@@ -1,4 +1,4 @@
-FROM ubuntu
+FROM abihf/wget
 
 WORKDIR /bot
 VOLUME /bot
