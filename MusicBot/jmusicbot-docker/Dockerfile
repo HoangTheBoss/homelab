@@ -1,21 +1,21 @@
-FROM abihf/wget
+FROM ubuntu:latest
+
+RUN apt update
+RUN apt install -y openjdk-11-jre wget
 
 WORKDIR /bot
-VOLUME /bot
 
-ENV BOTVERSION=0.3.8
+ARG BOTVERSION=0.3.8
+ARG TOKEN="0"
+ARG OWNER="0
+ARG PREFIX="!"
 
-ENV TOKEN=0
-ENV OWNER=0
-ENV PREFIX=!
+RUN wget https://github.com/jagrosh/MusicBot/releases/download/0.2.9/config.txt
+
+RUN sed -i 's/##token/'$token'/g' config.txt
+RUN sed -i 's/##owner/'$owner'/g' config.txt
+RUN sed -i 's/##prefix/'$prefix'/g' config.txt
 
 RUN wget -O JMusicBot.jar https://github.com/jagrosh/MusicBot/releases/download/$BOTVERSION/JMusicBot-$BOTVERSION.jar
-RUN wget https://github.com/jagrosh/MusicBot/releases/download/0.2.9/config.txt && sed -i 's/##token/'$token'/g' config.txt && sed -i 's/##owner/'$owner'/g' config.txt && sed -i 's/##prefix/'$prefix'/g' config.txt
-# CMD ls /home/
 
-# RUN sed -i 's/##token/'$token'/g' config.txt
-# RUN sed -i 's/##owner/'$owner'/g' config.txt
-# RUN sed -i 's/##prefix/'$prefix'/g' config.txt
-
-FROM openjdk:11-jre-slim
-ENTRYPOINT java -jar JMusicBot.jar
+CMD ["java", "-Dnogui=true", "-jar", "JMusicBot.jar"]
