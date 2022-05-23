@@ -1,7 +1,7 @@
 version: "3.9"
 services:
   jmusicbot:
-    build: jmusicbot:docker
+    build: jmusicbot-docker
     restart: unless-stopped
     volumes:
       - $BOTDIR:/bot
