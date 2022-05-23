@@ -1,5 +1,4 @@
 FROM ubuntu
-FROM openjdk:11-jre-slim
 
 WORKDIR /bot
 VOLUME /bot
@@ -18,4 +17,5 @@ RUN sed -i 's/##token/'$token'/g' config.txt
 RUN sed -i 's/##owner/'$owner'/g' config.txt
 RUN sed -i 's/##prefix/'$prefix'/g' config.txt
 
+FROM openjdk:11-jre-slim
 ENTRYPOINT java -jar JMusicBot.jar
