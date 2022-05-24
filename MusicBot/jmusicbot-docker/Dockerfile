@@ -16,8 +16,7 @@ RUN wget -O ./config.txt https://github.com/jagrosh/MusicBot/releases/download/0
 
 RUN sed -i 's+^token.*+token = "'$TOKEN'"+g' ./config.txt
 RUN sed -i 's+^owner.*+owner = "'$OWNER'"+g' ./config.txt
-RUN sed -i 's+^prefix.*+preix = "'$PREFIX'"+g' ./config.txt
-RUN cat ./config.txt
+RUN sed -i 's+^prefix.*+prefix = "'$PREFIX'"+g' ./config.txt
 
 RUN wget -q -O ./JMusicBot.jar https://github.com/jagrosh/MusicBot/releases/download/$BOTVERSION/JMusicBot-$BOTVERSION.jar
 
