@@ -1,12 +1,10 @@
 FROM ubuntu:latest
 
-VOLUME /config
-VOLUME /downloads
-
 COPY ./scrape.sh /
 COPY ./run.sh /
 
-RUN touch /config/links.txt
+VOLUME /config
+VOLUME /downloads
 
 RUN DEBIAN_FRONTEND=noninteractive \
 	apt-get update && \
@@ -15,5 +13,6 @@ RUN DEBIAN_FRONTEND=noninteractive \
 
 RUN pip3 install streamrip --upgrade
 
+RUN chmod +x /run.sh && chmod +x /scrape.sh
+
 ENTRYPOINT ["/run.sh"]
-RUN ["rip","repair","-n"]
