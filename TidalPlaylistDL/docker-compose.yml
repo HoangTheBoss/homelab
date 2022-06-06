@@ -2,7 +2,8 @@ version: "3.7"
 
 services:
   streamrip:
-    build: ripper
+    build: 
+      context: ripper
     restart: unless-stopped
     volumes:
       - $CONFPATH:/config

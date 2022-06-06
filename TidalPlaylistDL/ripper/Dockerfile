@@ -15,4 +15,5 @@ RUN DEBIAN_FRONTEND=noninteractive \
 
 RUN pip3 install streamrip --upgrade
 
-CMD ["/run.sh"]
+ENTRYPOINT ["/run.sh"]
+RUN ["rip","repair","-n"]
