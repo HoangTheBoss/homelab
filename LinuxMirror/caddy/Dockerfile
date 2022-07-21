@@ -1,9 +1,9 @@
-FROM caddy:2.5.0-beta.1-builder-alpine AS builder
+FROM caddy:2.5.2-builder AS builder
 
 RUN xcaddy build --with github.com/caddy-dns/cloudflare
 
-FROM caddy:2.5.0-beta.1-alpine
+FROM caddy:2.5.2
 
 COPY --from=builder /usr/bin/caddy /usr/bin/caddy
 
-#COPY Caddyfile /etc/caddy/Caddyfile
+COPY Caddyfile /etc/caddy/Caddyfile
