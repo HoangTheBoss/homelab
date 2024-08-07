@@ -53,4 +53,6 @@ jobs:
           --push \
           --tag $IMAGE_NAME:latest \
           --tag $IMAGE_NAME:$latest_tag \
+          -f WebServer/docker-caddy-cloudflare/Dockerfile \
           WebServer/docker-caddy-cloudflare
+      
