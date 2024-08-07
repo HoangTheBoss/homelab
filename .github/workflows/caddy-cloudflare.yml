@@ -44,13 +44,13 @@ jobs:
         password: ${{ secrets.GITHUB_TOKEN }}
 
     - name: Build and push Docker image
-      uses: docker/build-push-action@v6
-      with:
-        context: WebServer/docker-caddy-cloudflare
-        platforms: linux/amd64,linux/arm/v7,linux/arm64,linux/riscv64
-        push: true
-        tags: |
-          ghcr.io/${{ github.repository_owner }}/caddy-cloudflare:latest
-          ghcr.io/${{ github.repository_owner }}/caddy-cloudflare:${{ steps.get-latest-release.outputs.tag }}
-        cache-from: type=gha
-        cache-to: type=gha,mode=max
+      run: |
+        IMAGE_NAME=ghcr.io/${{ github.repository_owner }}/caddy-cloudflare
+        IMAGE_NAME=$(echo $IMAGE_NAME | tr '[:upper:]' '[:lower:]')  # Convert to lowercase
+        latest_tag=${{ steps.get-latest-release.outputs.tag }}
+        docker buildx build \
+          --platform linux/amd64,linux/arm/v7,linux/arm64,linux/riscv64 \
+          --push \
+          --tag $IMAGE_NAME:latest \
+          --tag $IMAGE_NAME:$latest_tag \
+          WebServer/docker-caddy-cloudflare
