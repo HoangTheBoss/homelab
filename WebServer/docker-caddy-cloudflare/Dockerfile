@@ -1,9 +1,12 @@
-FROM caddy:2.8.4-builder
+# Define a build-time variable for the Caddy version
+ARG CADDY_VERSION=2.8.4
+
+FROM caddy:${CADDY_VERSION}-builder AS builder
 
 RUN xcaddy build --with github.com/caddy-dns/cloudflare
 
-FROM caddy:2.8.4
+FROM caddy:${CADDY_VERSION}
 
-COPY --from=0 /usr/bin/caddy /usr/bin/caddy
+COPY --from=builder /usr/bin/caddy /usr/bin/caddy
 
 # COPY Caddyfile /etc/caddy/Caddyfile
