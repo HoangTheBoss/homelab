@@ -1,0 +1,120 @@
+# Caddyfile for nguyenhoang.cloud
+{
+        # debug
+        acme_dns cloudflare {env.CLOUDFLARE_API_TOKEN}
+}
+
+# Snippet for matching local IPs
+(local_matcher) {
+        @local {
+                remote_ip 192.168.0.0/16 172.16.0.0/12 10.0.0.0/8 127.0.0.1/8
+        }
+}
+
+#Snippet for privacy headers
+(privacy_headers) {
+        header {
+                server
+                Permissions-Policy interest-cohort=() # disable FLoC tracking
+                Strict-Transport-Security max-age=31536000; #enable HSTS
+                X-Content-Type-Options nosniff # disable clients from sniffing the media type
+                X-Frame-Options DENY # clickjacking protection
+                Referrer-Policy no-referrer-when-downgrade # keep referrer data off of HTTP connections
+        }
+}
+
+# ===============
+# Public services
+
+mirrors.nguyenhoang.cloud, mirrors-cf.nguyenhoang.cloud {
+        import privacy_headers
+        # tls {env.CLOUDFLARE_EMAIL} {
+        #       dns cloudflare {env.CLOUDFLARE_API_TOKEN}
+        # }
+        root * /mirror
+        encode zstd gzip
+        file_server browse
+}
+
+auth.nguyenhoang.cloud {
+        import privacy_headers
+
+        reverse_proxy server:9000
+}
+
+# dns.nguyenhoang.cloud {
+#         handle /dns-query {
+#                 reverse_proxy https://adguard:1443 {
+#                         transport http {
+#                                 tls
+#                                 tls_insecure_skip_verify
+#                         }
+#                 }
+#         }
+# }
+
+nextcloud.nguyenhoang.cloud {
+	import privacy_headers
+
+	reverse_proxy dind-nextcloud:11000
+}
+
+# ==============
+# Local services
+
+portainer.nguyenhoang.cloud {
+        import local_matcher
+        handle @local {
+                reverse_proxy 192.168.2.34:9000
+        }
+}
+
+truenas.nguyenhoang.cloud {
+        import local_matcher
+        handle @local {
+                reverse_proxy 192.168.2.34:80
+        }
+}
+
+seedbox.nguyenhoang.cloud {
+        import local_matcher
+        handle @local {
+                # # always forward outpost path to actual outpost
+                # reverse_proxy /outpost.goauthentik.io/* https://auth.nguyenhoang.cloud {
+                #       header_up Host {http.reverse_proxy.upstream.hostport}
+                # }
+
+                # # forward authentication to outpost
+                # forward_auth https://auth.nguyenhoang.cloud {
+                #       uri /outpost.goauthentik.io/auth/caddy
+
+                #       # capitalization of the headers is important, otherwise they will be empty
+                #       copy_headers X-Authentik-Username X-Authentik-Groups X-Authentik-Email X-Authentik-Name X-Authentik-Uid X-Authentik-Jwt X-Authentik-Meta-Jwks X-Authentik-Meta-Outpost X-Authentik-Meta-Provider X-Authentik-Meta-App X-Authentik-Meta-Version
+
+                #       # optional, in this config trust all private ranges, should probably be set to the outposts IP
+                #       trusted_proxies private_ranges
+                # }
+
+                reverse_proxy torrentbox:8080
+        }
+}
+
+adguard.nguyenhoang.cloud {
+        import local_matcher
+        handle @local {
+                reverse_proxy adguard:3000
+        }
+}
+
+nc-aio.nguyenhoang.cloud {
+	import local_matcher
+	handle @local {
+		reverse_proxy dind-nextcloud:8080 {
+			transport http {
+				tls_insecure_skip_verify
+			}
+		}
+	}
+}
+
+
