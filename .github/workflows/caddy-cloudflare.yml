@@ -25,8 +25,8 @@ jobs:
     - name: Update Dockerfile with latest version
       run: |
         latest_tag=${{ steps.get-latest-release.outputs.tag }}
-        sed -i "s/FROM caddy:.*-builder/FROM caddy:${latest_tag}-builder/" Webserver/docker-caddy-cloudflare/Dockerfile
-        sed -i "s/FROM caddy:.*/FROM caddy:${latest_tag}/" Webserver/docker-caddy-cloudflare/Dockerfile
+        sed -i "s/FROM caddy:.*-builder/FROM caddy:${latest_tag}-builder/" WebServer/docker-caddy-cloudflare/Dockerfile
+        sed -i "s/FROM caddy:.*/FROM caddy:${latest_tag}/" WebServer/docker-caddy-cloudflare/Dockerfile
 
     - name: Set up QEMU
       uses: docker/setup-qemu-action@v3
