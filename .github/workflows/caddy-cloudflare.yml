@@ -50,7 +50,7 @@ jobs:
         uses: docker/metadata-action@v5
         with:
           images: ${{needs.prepare.outputs.image_name}}
-          tags: type=semver,pattern={{version}},value=v${{needs.prepare.outputs.latest_tag}}
+          # tags: type=semver,pattern={{version}},value=v${{needs.prepare.outputs.latest_tag}}
 
       - name: Set up QEMU
         if: ${{ matrix.platform != 'linux/amd64' }}
@@ -73,7 +73,6 @@ jobs:
         uses: docker/build-push-action@v6
         with:
           platforms: ${{ matrix.platform }}
-          tags: ${{ steps.meta.outputs.tags }}
           labels: ${{ steps.meta.outputs.labels }}
           context: WebServer/docker-caddy-cloudflare
           build-args: CADDY_VERSION=${{needs.prepare.outputs.latest_tag}}
@@ -129,11 +128,10 @@ jobs:
       - name: Create manifest list and push
         working-directory: /tmp/digests
         run: |
-          digest_files=$(ls)
-          for digest_file in $digest_files; do
-            docker buildx imagetools create -t ${{needs.prepare.outputs.image_name}}:${{needs.prepare.outputs.latest_tag}} ghcr.io/${{ github.repository_owner }}/caddy-cloudflare@sha256:$digest_file
-          done
+          tags=$(jq -cr '.tags | map("-t " + .) | join(" ")' <<< "$DOCKER_METADATA_OUTPUT_JSON")
+          manifest_images=$(for digest in *.txt; do echo "${{ needs.prepare.outputs.image_name }}@sha256:$(cat $digest)"; done)
+          docker buildx imagetools create $tags $manifest_images
 
       - name: Inspect image
         run: |
-          docker buildx imagetools inspect ${{needs.prepare.outputs.image_name}}:${{needs.prepare.outputs.latest_tag}}
+          docker buildx imagetools inspect ${{ needs.prepare.outputs.image_name }}:${{ needs.prepare.outputs.latest_tag }}
