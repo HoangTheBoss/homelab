@@ -5,4 +5,4 @@ services:
     restart: always
     ports:
       - "$PORT:9100"
-    command: ["--padavan.ssh.host=$ROUTERSSH"]
+    command: ["--padavan.ssh.host=$ROUTERSSH", "--padavan.ssh.username=$ROUTERUSER", "--padavan.ssh.password=$ROUTERPASS"]
