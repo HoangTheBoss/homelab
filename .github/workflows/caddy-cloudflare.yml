@@ -51,6 +51,12 @@ jobs:
           username: ${{ github.actor }}
           password: ${{ secrets.GITHUB_TOKEN }}
 
+      - name: Prepare valid tag
+        id: prepare-tag
+        run: |
+          sanitized_platform=$(echo "${{ matrix.platform }}" | sed 's/\//-/g')
+          echo "sanitized_platform=${sanitized_platform}" >> $GITHUB_ENV
+
       - name: Build and push platform-specific image
         uses: docker/build-push-action@v6
         with:
@@ -59,7 +65,7 @@ jobs:
           push: true
           outputs: type=registry
           tags: |
-            ${{ needs.prepare.outputs.image_name }}:v${{ needs.prepare.outputs.latest_tag }}-${{ matrix.platform // '/' '-' }}
+            ${{ needs.prepare.outputs.image_name }}:v${{ needs.prepare.outputs.latest_tag }}-${{ env.sanitized_platform }}
           build-args: |
             CADDY_VERSION=${{ needs.prepare.outputs.latest_tag }}
 
@@ -81,7 +87,8 @@ jobs:
         run: |
           platforms="linux/amd64 linux/arm/v7 linux/arm64 linux/riscv64"
           for platform in $platforms; do
-            images+=" ${{ needs.prepare.outputs.image_name }}:v${{ needs.prepare.outputs.latest_tag }}-${platform//\//-}"
+            sanitized_platform=$(echo "$platform" | sed 's/\//-/g')
+            images+=" ${{ needs.prepare.outputs.image_name }}:v${{ needs.prepare.outputs.latest_tag }}-${sanitized_platform}"
           done
           docker buildx imagetools create \
             -t ${{ needs.prepare.outputs.image_name }}:v${{ needs.prepare.outputs.latest_tag }} \
