@@ -1,57 +1,92 @@
-name: Build and Push Custom Caddy
+name: Build and Push Caddy with Cloudflare module
 
 on:
   workflow_dispatch:
 
 jobs:
-  build-and-push:
+  prepare:
     runs-on: ubuntu-latest
-    permissions:
-      packages: write
-      contents: read
-
+    outputs:
+      latest_tag: ${{ steps.get-latest-release.outputs.tag }}
+      image_name: ${{ steps.set-image-name.outputs.image_name }}
     steps:
-    - name: Get latest Caddy release tag
-      id: get-latest-release
-      run: |
-        latest_release=$(curl -s https://api.github.com/repos/caddyserver/caddy/releases/latest | jq -r .tag_name)
-        clean_tag=${latest_release#v}  # Remove 'v' prefix
-        echo "Latest release: $clean_tag"
-        echo "::set-output name=tag::$clean_tag"
+      - name: Get latest Caddy release tag
+        id: get-latest-release
+        run: |
+          latest_release=$(curl -s https://api.github.com/repos/caddyserver/caddy/releases/latest | jq -r .tag_name)
+          clean_tag=${latest_release#v}  # Remove 'v' prefix
+          echo "tag=${clean_tag}" >> $GITHUB_OUTPUT
 
-    - name: Checkout repository
-      uses: actions/checkout@v4
+      - name: Set image name
+        id: set-image-name
+        run: |
+          name=ghcr.io/${{ github.repository_owner }}/caddy-cloudflare
+          name=$(echo $name | tr '[:upper:]' '[:lower:]')  # Convert to lowercase
+          echo "image_name=${name}" >> $GITHUB_OUTPUT
 
-    - name: Update Dockerfile with latest version
-      run: |
-        latest_tag=${{ steps.get-latest-release.outputs.tag }}
-        sed -i "s/ARG CADDY_VERSION=.*/ARG CADDY_VERSION=${latest_tag}/" WebServer/docker-caddy-cloudflare/Dockerfile
+  build:
+    needs: prepare
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        platform: [linux/amd64, linux/arm/v7, linux/arm64, linux/riscv64]
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
 
-    - name: Set up QEMU
-      uses: docker/setup-qemu-action@v3
-      with:
-        platforms: arm,arm64,riscv64
+      - name: Set up QEMU
+        uses: docker/setup-qemu-action@v3
+        if: ${{ matrix.platform != 'linux/amd64' }}
+        with:
+          platforms: all
 
-    - name: Set up Docker Buildx
-      uses: docker/setup-buildx-action@v3
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
 
-    - name: Log in to GitHub Container Registry
-      uses: docker/login-action@v3
-      with:
-        registry: ghcr.io
-        username: ${{ github.actor }}
-        password: ${{ secrets.GITHUB_TOKEN }}
+      - name: Log in to GitHub Container Registry
+        uses: docker/login-action@v3
+        with:
+          registry: ghcr.io
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
 
-    - name: Build and push Docker image
-      run: |
-        IMAGE_NAME=ghcr.io/${{ github.repository_owner }}/caddy-cloudflare
-        IMAGE_NAME=$(echo $IMAGE_NAME | tr '[:upper:]' '[:lower:]')  # Convert to lowercase
-        latest_tag=${{ steps.get-latest-release.outputs.tag }}
-        docker buildx build \
-          --platform linux/amd64,linux/arm/v7,linux/arm64,linux/riscv64 \
-          --push \
-          --tag $IMAGE_NAME:latest \
-          --tag $IMAGE_NAME:$latest_tag \
-          --build-arg CADDY_VERSION=$latest_tag \
-          -f WebServer/docker-caddy-cloudflare/Dockerfile \
-          WebServer/docker-caddy-cloudflare
+      - name: Build and push platform-specific image
+        uses: docker/build-push-action@v6
+        with:
+          context: WebServer/docker-caddy-cloudflare
+          platforms: ${{ matrix.platform }}
+          push: true
+          outputs: type=registry
+          tags: |
+            ${{ needs.prepare.outputs.image_name }}:v${{ needs.prepare.outputs.latest_tag }}-${{ matrix.platform }}
+          build-args: |
+            CADDY_VERSION=${{ needs.prepare.outputs.latest_tag }}
+
+  push:
+    needs: build
+    runs-on: ubuntu-latest
+    steps:
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
+
+      - name: Log in to GitHub Container Registry
+        uses: docker/login-action@v3
+        with:
+          registry: ghcr.io
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Create and push manifest list
+        run: |
+          platforms="linux/amd64 linux/arm/v7 linux/arm64 linux/riscv64"
+          for platform in $platforms; do
+            images+=" ${{ needs.prepare.outputs.image_name }}:v${{ needs.prepare.outputs.latest_tag }}-${platform}"
+          done
+          docker buildx imagetools create \
+            -t ${{ needs.prepare.outputs.image_name }}:v${{ needs.prepare.outputs.latest_tag }} \
+            $images
+
+      - name: Inspect manifest
+        run: |
+          docker buildx imagetools inspect ${{ needs.prepare.outputs.image_name }}:v${{ needs.prepare.outputs.latest_tag }}
