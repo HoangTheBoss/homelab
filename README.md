@@ -2,17 +2,26 @@
 
 ## Summary
 
-I'm running various services on a DIY NAS with TrueNAS Scale and running routers and APs with OpenWRT. Services are mostly managed through Portainer with Docker Compose, and some scripts run directly on the host. A UPS is planned for the server to ensure resilience and uptime.
+I'm running various services and experimenting around on my servers with Proxmox and TrueNAS Scale. My routers and APs runs OpenWRT. 
 
-## Server~~s~~
+Services are mostly managed through Portainer with Docker Compose, and some scripts run directly on the hosts. A UPS is planned for the servers to ensure resilience and uptime.
+
+## Servers
+
+- Proxmox
+  - Intel Xeon E5-2650 v4 CPU @ 2.20GHz (12C24T)
+  - 64GB DDR4 ECC (4 x 16GB RDIMM)
+  - NVIDIA GeForce GTX 1650 4GB (GDDR5/75W)
+  - Boot + Data: WD Blue 1TB SATA3 7200RPM (WD10EZEX)
+  - Unused: Kingston A400 120GB SATA3 SSD (SA400S37120G)
 
 - TrueNAS Scale
-  - Intel Core i5-3470 CPU @ 3.20GHz (4C/4T)
-  - 16GB DDR3 (2 x 8GB DDR3)
+  - Intel Core i5-3470 CPU @ 3.20GHz (4C4T)
+  - 16GB DDR3 (2 x 8GB DIMM)
   - Boot: Unknown 160GB HDD (OOS160G16M)
-  - HDD1: Seagate BarraCuda 500GB SATA3 7200RPM (ST500DM002)
-  - HDD2: WD RE Enterprise 500GB SATA3 7200RPM (WD5003ABYZ)
-  - HDD3: WD Purple 2TB SATA3 5400RPM (WDC WD20PURX)
+  - HD1: Seagate BarraCuda 500GB SATA3 7200RPM (ST500DM002)
+  - HD2: WD RE Enterprise 500GB SATA3 7200RPM (WD5003ABYZ)
+  - HD3: WD Purple 2TB SATA3 5400RPM (WDC WD20PURX)
 
 ## Networking
 
@@ -52,7 +61,7 @@ I'm running various services on a DIY NAS with TrueNAS Scale and running routers
 
 ## Future Plans
 
-- Replace the current server hardware with a newer, more efficient and powerful AMD Ryzen system
+- Replace the current servers with a newer, more efficient and powerful AMD Ryzen system
 - Run Proxmox on the new system and move TrueNAS to a VM, massively extends the potential of my homelab
-- Get a HBA card and drives, optimally dozens of terabytes passed through to TrueNAS
-- Migrate to 2.5GbE with an aftermarket 2.5GbE ONU and OPNSense x86 router, 2.5GbE switches and NICs
+- Get a HBA/SATA card and drives, optimally dozens of terabytes passed through to TrueNAS
+- Migrate to 2.5GbE WAN with an aftermarket 2.5GbE ONU and OPNSense x86 router, 2.5GbE switches and NICs

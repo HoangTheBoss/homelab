@@ -1,0 +1,25 @@
+services:
+  cloudflare-ddns:
+    image: favonia/cloudflare-ddns:latest
+    restart: always
+    secrets:
+      - cf_api_token
+    read_only: true
+    cap_drop: [all]
+    security_opt: [no-new-privileges:true]
+    environment:
+      - CF_API_TOKEN_FILE=/run/secrets/cf_api_token
+      - DOMAINS
+      - PROXIED
+      - IP6_PROVIDER=none
+    deploy:
+      mode: replicated
+      replicas: 1
+      update_config:
+        parallelism: 1
+        delay: 10s
+      restart_policy:
+        condition: on-failure
+secrets:
+  cf_api_token:
+    external: true

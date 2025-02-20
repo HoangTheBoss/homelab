@@ -36,16 +36,16 @@ jobs:
         uses: actions/checkout@v4
 
       - name: Set up QEMU
-        uses: docker/setup-qemu-action@v3
+        uses: docker/setup-qemu-action@v3 # Updated to v3
         if: ${{ matrix.platform != 'linux/amd64' }}
         with:
           platforms: all
 
       - name: Set up Docker Buildx
-        uses: docker/setup-buildx-action@v3
+        uses: docker/setup-buildx-action@v3 # Updated to v3
 
       - name: Log in to GitHub Container Registry
-        uses: docker/login-action@v3
+        uses: docker/login-action@v3 # Updated to v3
         with:
           registry: ghcr.io
           username: ${{ github.actor }}
@@ -58,26 +58,27 @@ jobs:
           echo "sanitized_platform=${sanitized_platform}" >> $GITHUB_ENV
 
       - name: Build and push platform-specific image
-        uses: docker/build-push-action@v6
+        uses: docker/build-push-action@v6  # Keep v6
         with:
           context: WebServer/docker-caddy-cloudflare
           platforms: ${{ matrix.platform }}
           push: true
-          outputs: type=registry
+          outputs: type=image,push=true
           tags: |
             ${{ needs.prepare.outputs.image_name }}:v${{ needs.prepare.outputs.latest_tag }}-${{ env.sanitized_platform }}
           build-args: |
             CADDY_VERSION=${{ needs.prepare.outputs.latest_tag }}
+          provenance: false  # Explicitly disable provenance
 
   push:
     needs: build
     runs-on: ubuntu-latest
     steps:
       - name: Set up Docker Buildx
-        uses: docker/setup-buildx-action@v3
+        uses: docker/setup-buildx-action@v3 # Updated to v3
 
       - name: Log in to GitHub Container Registry
-        uses: docker/login-action@v3
+        uses: docker/login-action@v3  # Updated to v3
         with:
           registry: ghcr.io
           username: ${{ github.actor }}
@@ -86,6 +87,7 @@ jobs:
       - name: Create and push manifest list
         run: |
           platforms="linux/amd64 linux/arm/v7 linux/arm64 linux/riscv64"
+          images=""
           for platform in $platforms; do
             sanitized_platform=$(echo "$platform" | sed 's/\//-/g')
             images+=" ${{ needs.prepare.outputs.image_name }}:v${{ needs.prepare.outputs.latest_tag }}-${sanitized_platform}"
