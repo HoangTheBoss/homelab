@@ -64,7 +64,7 @@ jobs:
           if docker manifest inspect "$IMAGE_NAME" > /dev/null 2>&1; then
             echo "Image exists: $IMAGE_NAME"
             echo "exists=true" >> $GITHUB_OUTPUT
-          else:
+          else
             echo "Image does not exist: $IMAGE_NAME"
             echo "exists=false" >> $GITHUB_OUTPUT
           fi
