@@ -60,7 +60,7 @@ jobs:
       - name: Check if image exists
         id: check-image
         run: |
-          IMAGE_NAME="${{ needs.prepare.outputs.image_name }}:v${{ needs.prepare.outputs.latest_tag }}-${{ env.sanitized_platform }}"
+          IMAGE_NAME="${{ needs.prepare.outputs.image_name }}:${{ needs.prepare.outputs.latest_tag }}-${{ env.sanitized_platform }}"
           if docker manifest inspect "$IMAGE_NAME" > /dev/null 2>&1; then
             echo "Image exists: $IMAGE_NAME"
             echo "exists=true" >> $GITHUB_OUTPUT
@@ -78,7 +78,7 @@ jobs:
           push: true
           outputs: type=image,push=true
           tags: |
-            ${{ needs.prepare.outputs.image_name }}:v${{ needs.prepare.outputs.latest_tag }}-${{ env.sanitized_platform }}
+            ${{ needs.prepare.outputs.image_name }}:${{ needs.prepare.outputs.latest_tag }}-${{ env.sanitized_platform }}
           build-args: |
             CADDY_VERSION=${{ needs.prepare.outputs.latest_tag }}
           provenance: false
@@ -107,12 +107,12 @@ jobs:
           images=""
           for platform in $platforms; do
             sanitized_platform=$(echo "$platform" | sed 's/\//-/g')
-            images+=" ${{ needs.prepare.outputs.image_name }}:v${{ needs.prepare.outputs.latest_tag }}-${sanitized_platform}"
+            images+=" ${{ needs.prepare.outputs.image_name }}:${{ needs.prepare.outputs.latest_tag }}-${sanitized_platform}"
           done
           docker buildx imagetools create \
-            -t ${{ needs.prepare.outputs.image_name }}:v${{ needs.prepare.outputs.latest_tag }} \
+            -t ${{ needs.prepare.outputs.image_name }}:${{ needs.prepare.outputs.latest_tag }} \
             $images
 
       - name: Inspect manifest
         run: |
-          docker buildx imagetools inspect ${{ needs.prepare.outputs.image_name }}:v${{ needs.prepare.outputs.latest_tag }}
+          docker buildx imagetools inspect ${{ needs.prepare.outputs.image_name }}:${{ needs.prepare.outputs.latest_tag }}
