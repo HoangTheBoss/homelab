@@ -111,6 +111,7 @@ jobs:
           done
           docker buildx imagetools create \
             -t ${{ needs.prepare.outputs.image_name }}:${{ needs.prepare.outputs.latest_tag }} \
+            -t ${{ needs.prepare.outputs.image_name }}:latest \
             $images
 
       - name: Inspect manifest
