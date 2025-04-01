@@ -73,7 +73,7 @@ jobs:
         if: steps.check-image.outputs.exists == 'false'
         uses: docker/build-push-action@v6
         with:
-          context: WebServer/docker-caddy-cloudflare
+          context: WebServices/Caddy/docker-caddy-cloudflare
           platforms: ${{ matrix.platform }}
           push: true
           outputs: type=image,push=true

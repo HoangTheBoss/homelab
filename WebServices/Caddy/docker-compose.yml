@@ -1,0 +1,27 @@
+version: "3.7"
+
+services:
+  # Caddy Reverse Proxy & Webserver
+  caddy:
+    image: ghcr.io/hoangtheboss/caddy-cloudflare:latest
+    restart: unless-stopped
+    ports:
+      - 80:80
+      - 443:443
+    networks:
+      - caddy-net
+    volumes:
+      - $CADDY_DIR/Caddyfile:/etc/caddy/Caddyfile:ro
+      - $MIRRORPATH:/mirror:ro
+      - $CADDY_DIR/data:/data
+      - $CADDY_DIR/config:/config
+    environment:
+      - CLOUDFLARE_EMAIL=$EMAIL
+      - CLOUDFLARE_API_TOKEN=$TOKEN
+      - ACME_AGREE=true
+
+networks:
+  caddy-net:
+    name: caddy-net
+    driver: bridge
+    attachable: true
